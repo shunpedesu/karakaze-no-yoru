@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>からっかぜの夜</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div id="background"></div>
+  <div id="darkness-overlay"></div>
+
+  <div id="title-card">
+    <div id="title-card-inner"></div>
+  </div>
+
+  <div id="game-area">
+    <div id="text-box">
+      <div id="text-content"></div>
+      <div id="advance-indicator">▼</div>
+    </div>
+    <div id="choices"></div>
+    <div id="input-area">
+      <div id="character-list-label">この旅館にいた人たち</div>
+      <div id="character-list"></div>
+      <div id="input-row">
+        <input type="text" id="name-input" placeholder="名前を入力" autocomplete="off" spellcheck="false">
+        <button id="name-submit">決定</button>
+      </div>
+      <div id="input-error"></div>
+    </div>
+  </div>
+
+  <button id="sound-toggle" title="音声ON/OFF">🔇</button>
+
+  <div id="start-screen">
+    <div id="start-content">
+      <div id="start-title">からっかぜの夜</div>
+      <div id="start-subtitle">Sound Novel</div>
+      <button id="start-btn">は じ め る</button>
+    </div>
+  </div>
+
+  <script src="scenario.js"></script>
+  <script src="engine.js"></script>
+</body>
+</html>
