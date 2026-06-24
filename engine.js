@@ -172,10 +172,12 @@ class NovelEngine {
     this._allChars = chars;
     let i = 0;
 
+    const box = document.getElementById('text-box');
     const tick = () => {
       if (i < chars.length) {
         chars[i].classList.remove('hidden');
         i++;
+        box.scrollTop = box.scrollHeight;
         this._typingTimer = setTimeout(tick, 38);
       } else {
         this.isTyping = false;
