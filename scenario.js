@@ -66,7 +66,7 @@ const SCENARIO = {
 
   p07b: {
     bg: 'lobby', darkness: 0, speaker: '長野原豚子',
-    text: '妻の豚子さんは白いコートを着た小柄な人で、\nキャベ蔵さんの腕をずっとつかんでいた。\n栗色の髪が、冬の風に少し揺れた。\n\n「空気がきれいで助かります」と豚子さんが言った。\n「温泉、ゆっくり入れるといいですね」とわたしが言った。\n「ええ」と豚子さんが言った。\n\nなんか、疲れてる夫婦だな、と思った。',
+    text: '妻の豚子さんは白いコートを着た小柄な人で、\nキャベ蔵さんの腕をずっとつかんでいた。\n栗色の髪が、冬の風に少し揺れた。\n\n「空気がきれいで助かります」\n\nわたしが「温泉、ゆっくり入れるといいですね」と言うと、\n\n「ええ」\n\nそれだけだった。\n\nなんか、疲れてる夫婦だな、と思った。',
     next: 'p08'
   },
 
@@ -117,20 +117,26 @@ const SCENARIO = {
   // ============================================================
 
   e01: {
-    bg: 'room', darkness: 0.3, pause: true, time: '12月29日　深夜 2時',
+    bg: 'room', darkness: 0.3, pause: true, longpause: true, time: '12月29日　深夜 2時',
     text: '叩き起こされたのは、夜中の2時だった。\n\n「ねぎこちゃん、起きて」\n\n扉を開けると、岩島さんはもう着物を着ていた。\n\n夜中の2時に。\n\n髪もきちんとまとめて、廊下に立っていた。\n\n岩島さんの声が、いつもと違った。',
     next: 'e02'
   },
 
   e02: {
     bg: 'onsen', darkness: 0.4,
-    text: '露天風呂に着いたとき、\n渋川支配人はすでにそこにいた。\n\n湯の中に、\n中之条まんじさんが、\n浮いていた。',
+    text: '露天風呂の引き戸を開けた瞬間、湯気が顔に当たった。\n\nその向こうに、渋川支配人が立っていた。\n\nほとんど動かずに、湯の面を見ていた。\n\n「……ねぎこさん」\n\n支配人がわたしの名前を呼んだ。\n\nそれで、見てしまった。',
     next: 'e03'
   },
 
   e03: {
-    bg: 'onsen', darkness: 0.4,
-    text: 'わたしは最初、\n\n寝ぼけているのかと思った。\n\nそれくらい、\n\n現実じゃないみたいだった。',
+    bg: 'onsen', darkness: 0.45,
+    text: '湯の中に、中之条まんじさんが、浮いていた。\n\n仰向けに。\n\n白いシャツが、水の中に広がっていた。\n\nわたしはそこから動けなかった。\n\n足が地面についているのか、わからなかった。',
+    next: 'e03b'
+  },
+
+  e03b: {
+    bg: 'onsen', darkness: 0.48,
+    text: '雪が降っていた。\n\n露天風呂に、静かに降り積もっていた。\n\n中之条さんの顔に、雪が落ちた。\n\n溶けなかった。\n\nわたしはようやく、理解した。\n\nこの人は、死んでいる。',
     next: 'e04'
   },
 
@@ -145,25 +151,25 @@ const SCENARIO = {
   // ============================================================
 
   i01: {
-    bg: 'lobby', darkness: 0.35,
+    bg: 'lobby', darkness: 0.35, bgm: 'bgm/bgm_horror.mp3',
     text: '渋川支配人がフロントの電話を取った。\n\nコードを持ち上げ、\n受話器を耳に当てて、\n少しの間、動かなかった。\n\n「……つながらない」\n\n「え？」\n\n「電話線が、切れている」\n\n銀縁の眼鏡の奥で、\n支配人の目が、\n初めて、微かに揺れた。',
     next: 'i02'
   },
 
   i02: {
-    bg: 'lobby', darkness: 0.35,
+    bg: 'lobby', darkness: 0.35, bgm: 'bgm/bgm_horror.mp3',
     text: 'わたしはポケットから\nスマートフォンを取り出した。\n\n圏外。\n\n「あの、携帯は……」\n\n渋川支配人は静かに首を振った。\n\n「四万はもともとつながりにくい。\n　この天気では無理だ」\n\n岩島さんも自分の携帯を見ていた。\n同じだった。',
     next: 'i03'
   },
 
   i03: {
-    bg: 'lobby', darkness: 0.4,
+    bg: 'lobby', darkness: 0.4, bgm: 'bgm/bgm_horror.mp3',
     text: '「では、誰かが歩いて——」\n\n渋川支配人は窓の外を見た。\n\n暗闇の中で、\n雪が横向きに飛んでいた。\n\n「橋が、通れない。\n　昨晩から封鎖になっていた。\n　この雪では、歩いても渡れない」\n\nわたしは窓の外を見た。\n\n四万館は、\n\n完全に、\n\n孤立していた。',
     next: 'i04'
   },
 
   i04: {
-    bg: 'lobby', darkness: 0.4,
+    bg: 'lobby', darkness: 0.4, bgm: 'bgm/bgm_horror.mp3',
     text: '警察に連絡できない。\n外に出られない。\n助けは来ない。\n\nこの旅館の中に、\n目の前の露天風呂で\n人を死なせた誰かがいる。\n\n……かもしれない。\n\nわたしの頭は、\nまだうまく動いていなかった。',
     next: 'choice01'
   },
@@ -198,7 +204,7 @@ const SCENARIO = {
   // ============================================================
 
   m01: {
-    bg: 'dining', darkness: 0.2, pause: true, time: '12月29日　朝 6時',
+    bg: 'dining', darkness: 0.2, pause: true, longpause: true, time: '12月29日　朝 6時',
     text: '朝の6時。\n\n渋川支配人が食堂に全員を集めた。\n\n窓の外は、まだ雪が降っていた。\n橋は、まだ通れなかった。',
     next: 'm02'
   },
@@ -290,7 +296,7 @@ const SCENARIO = {
   },
 
   n2_setup: {
-    bg: 'corridor', darkness: 0.35, pause: true, time: '12月29日　夜 22時', bgm: 'bgm/bgm_horror.mp3',
+    bg: 'corridor', darkness: 0.35, pause: true, longpause: true, time: '12月29日　夜 22時', bgm: 'bgm/bgm_horror.mp3',
     text: '夜の10時。\n\n見回りをしていたら、\n渋川支配人が\n長野原さんの部屋の前に\n立っているのが見えた。\n\nノックはしていなかった。\n\nただ、扉の前で、\n動かずに立っていた。',
     choices: [
       { label: '声をかける', next: 'n2_c3a' },
@@ -311,7 +317,7 @@ const SCENARIO = {
   },
 
   n2_death: {
-    bg: 'corridor', darkness: 0.45, pause: true, chapter: 2, time: '12月30日　朝', deaths: ['長野原キャベ蔵'], bgm: 'bgm/bgm_horror.mp3',
+    bg: 'corridor', darkness: 0.45, pause: true, longpause: true, chapter: 2, time: '12月30日　朝', deaths: ['長野原キャベ蔵'], bgm: 'bgm/bgm_horror.mp3',
     text: '翌朝、\n長野原キャベ蔵さんが\n廊下で倒れているのを\n岩島さんが見つけた。\n\n後ろから殴られたようだった。\n\n窓が、開いていた。',
     next: 'n2_all'
   },
@@ -413,7 +419,7 @@ const SCENARIO = {
   },
 
   buta03: {
-    bg: 'corridor', darkness: 0.45, pause: true, bgm: 'bgm/bgm_horror.mp3',
+    bg: 'corridor', darkness: 0.45, pause: true, longpause: true, bgm: 'bgm/bgm_horror.mp3',
     text: '2時間後。\n\n豚子さんが「部屋に戻る」と言った。\n\n「1人は危ない」とラスクさんが言った。\n\n「……1人でいたいんです」\n\n豚子さんの目が、虚ろだった。\n\n夫を失った人の目だった。\n\n岩島さんがわたしを見た。\n\nわたしは廊下まで送っていった。',
     next: 'buta04'
   },
@@ -425,7 +431,7 @@ const SCENARIO = {
   },
 
   buta05: {
-    bg: 'corridor', darkness: 0.5, pause: true, bgm: 'bgm/bgm_horror.mp3',
+    bg: 'corridor', darkness: 0.5, pause: true, longpause: true, bgm: 'bgm/bgm_horror.mp3',
     text: '10分後。\n\n廊下に、声が響いた。\n\n叫び声ではなかった。\n\nただ、何かが倒れる音と、\nそれから——\n\n静寂。\n\nわたしは走った。',
     next: 'buta06'
   },
@@ -685,7 +691,7 @@ const SCENARIO = {
   },
 
   true_15: {
-    bg: 'dawn', darkness: 0.1, pause: true, time: '12月31日　夜明け',
+    bg: 'dawn', darkness: 0.1, pause: true, longpause: true, time: '12月31日　夜明け',
     text: '夜明けに、雪が止んだ。\n\nからっかぜだけが、\n峡谷をまだ走っていた。\n\n橋の封鎖が解除された。\n\n警察が来た。\nラスクさんが証言した。\n10年前の書類が、初めて世に出た。',
     next: 'true_16'
   },

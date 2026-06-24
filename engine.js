@@ -225,6 +225,7 @@ class WindAudio {
     this.nodes = [];
     this.enabled = false;
     this._started = false;
+    this._sceneWind = true; // 現在のシーンで風音を出すか
   }
 
   _init() {
@@ -274,18 +275,39 @@ class WindAudio {
   }
 
   _modulateGain(gainNode, min, max) {
-    if (!this.enabled) return;
+    if (!this.enabled || !this._sceneWind) return;
     const duration = 3 + Math.random() * 6;
     const target = min + Math.random() * (max - min);
     gainNode.gain.linearRampToValueAtTime(target, this.ctx.currentTime + duration);
     setTimeout(() => this._modulateGain(gainNode, min, max), duration * 900);
   }
 
+  // 背景に応じて風音をON/OFF（屋外・廊下のみ）
+  setScene(bg) {
+    const windBgs = new Set(['winter-outside', 'corridor', 'onsen', 'dawn']);
+    const on = windBgs.has(bg);
+    if (on === this._sceneWind) return;
+    this._sceneWind = on;
+    if (!this.ctx || !this.enabled) return;
+    const t = this.ctx.currentTime;
+    this.nodes.forEach(n => {
+      n.gainNode.gain.cancelScheduledValues(t);
+      if (on) {
+        n.gainNode.gain.linearRampToValueAtTime(n.gainMin, t + 1.5);
+        setTimeout(() => this._modulateGain(n.gainNode, n.gainMin, n.gainMax), 1500);
+      } else {
+        n.gainNode.gain.linearRampToValueAtTime(0, t + 1.5);
+      }
+    });
+  }
+
   enable() {
     this.enabled = true;
     this.start();
     if (this.ctx?.state === 'suspended') this.ctx.resume();
-    this.nodes.forEach(n => this._modulateGain(n.gainNode, n.gainMin, n.gainMax));
+    if (this._sceneWind) {
+      this.nodes.forEach(n => this._modulateGain(n.gainNode, n.gainMin, n.gainMax));
+    }
   }
 
   disable() {
@@ -387,6 +409,7 @@ class NovelEngine {
 
     if (scene.bg) {
       this.bgEl.className = 'bg-' + scene.bg;
+      this.wind.setScene(scene.bg);
       if (scene.bgm) {
         this.bgm.changeToFile(scene.bgm);
       } else {
@@ -462,7 +485,14 @@ class NovelEngine {
       });
     };
 
-    if (scene.pause) {
+    if (scene.longpause) {
+      // 時間経過：長めの暗転（2秒）→ フェード（1.5秒）→ テキスト開始
+      this.darknessEl.style.opacity = '1';
+      setTimeout(() => {
+        if (scene.darkness !== undefined) this.darknessEl.style.opacity = scene.darkness;
+        setTimeout(startText, 1800);
+      }, 2000);
+    } else if (scene.pause) {
       setTimeout(() => {
         if (scene.darkness !== undefined) this.darknessEl.style.opacity = scene.darkness;
         setTimeout(startText, 1200);
@@ -591,7 +621,13 @@ class NovelEngine {
       this.nameInputEl.onkeydown = (e) => { if (e.key === 'Enter') { e.stopPropagation(); submit(); } };
     };
 
-    if (scene.pause) {
+    if (scene.longpause) {
+      this.darknessEl.style.opacity = '1';
+      setTimeout(() => {
+        if (scene.darkness !== undefined) this.darknessEl.style.opacity = scene.darkness;
+        setTimeout(() => this.typeText(scene.text, reveal), 1800);
+      }, 2000);
+    } else if (scene.pause) {
       this.darknessEl.style.opacity = '1';
       setTimeout(() => {
         if (scene.darkness !== undefined) this.darknessEl.style.opacity = scene.darkness;
