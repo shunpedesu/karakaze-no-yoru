@@ -91,6 +91,49 @@ body {
   background: rgba(90, 45, 5, 0.28);
 }
 
+/* ── 推理カード（deduction overlay） ── */
+#deduction-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0,0,0,0.72);
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+#deduction-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+#deduction-card {
+  width: 100%;
+  padding: 28px 32px 44px;
+  background: linear-gradient(to top, rgba(18,12,6,0.99), rgba(28,18,10,0.94));
+  border-top: 1px solid rgba(200,150,70,0.35);
+}
+#deduction-label {
+  font-size: 11px;
+  color: rgba(200,150,70,0.6);
+  letter-spacing: 0.25em;
+  margin-bottom: 16px;
+}
+#deduction-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 17px;
+  color: #e8c8a0;
+  line-height: 2;
+  text-shadow: 0 0 14px rgba(220,160,70,0.45);
+}
+#deduction-hint {
+  margin-top: 20px;
+  font-size: 10px;
+  color: rgba(200,150,70,0.35);
+  letter-spacing: 0.2em;
+  text-align: right;
+}
+
 /* ── 暗転オーバーレイ ── */
 #darkness-overlay {
   position: fixed;
@@ -174,6 +217,11 @@ body {
 
 .char { display: inline; }
 .char.hidden { visibility: hidden; }
+.char.emphasis {
+  color: #e8c8a0;
+  text-shadow: 0 0 8px rgba(220,160,80,0.7);
+  font-weight: 700;
+}
 
 #advance-indicator {
   position: absolute;
@@ -839,4 +887,180 @@ body.climax-input #name-submit {
 @keyframes climax-breathe {
   0%, 100% { box-shadow: 0 0 12px rgba(160, 100, 60, 0.08); }
   50%       { box-shadow: 0 0 28px rgba(160, 100, 60, 0.2); }
+}
+
+/* ── 設定パネル ── */
+#settings-panel {
+  position: fixed;
+  top: 60px;
+  left: 14px;
+  z-index: 200;
+  background: rgba(7, 5, 10, 0.97);
+  border: 1px solid rgba(140, 130, 110, 0.28);
+  border-radius: 4px;
+  padding: 18px 20px;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 230px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+#settings-panel.open { display: flex; }
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.settings-label {
+  font-size: 11px;
+  color: rgba(175, 165, 140, 0.6);
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+
+.speed-btns { display: flex; gap: 5px; }
+
+.speed-btn {
+  background: rgba(20, 15, 8, 0.85);
+  border: 1px solid rgba(140, 130, 110, 0.28);
+  border-radius: 2px;
+  color: rgba(170, 160, 130, 0.5);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 11px;
+  padding: 5px 10px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+}
+.speed-btn:hover, .speed-btn.active {
+  background: rgba(45, 36, 18, 0.9);
+  border-color: rgba(190, 165, 100, 0.5);
+  color: #ddd0a8;
+}
+
+.toggle-btn {
+  background: rgba(20, 15, 8, 0.85);
+  border: 1px solid rgba(140, 130, 110, 0.28);
+  border-radius: 2px;
+  color: rgba(170, 160, 130, 0.5);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 11px;
+  padding: 5px 14px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.15s;
+  min-width: 48px;
+}
+.toggle-btn.on {
+  background: rgba(45, 36, 18, 0.9);
+  border-color: rgba(190, 165, 100, 0.5);
+  color: #ddd0a8;
+}
+
+.volume-slider {
+  width: 100px;
+  accent-color: rgba(190, 165, 100, 0.7);
+  cursor: pointer;
+}
+
+/* ── クレジット画面 ── */
+#credits-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2.5s ease;
+}
+#credits-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+#credits-inner {
+  text-align: center;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: credits-rise 2.5s ease both;
+}
+@keyframes credits-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+#credits-title {
+  font-size: clamp(20px, 4vw, 34px);
+  color: rgba(190, 175, 145, 0.88);
+  letter-spacing: 0.42em;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+#credits-subtitle {
+  font-size: 11px;
+  color: rgba(145, 135, 110, 0.32);
+  letter-spacing: 0.3em;
+  margin-bottom: 64px;
+}
+#credits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-bottom: 64px;
+}
+.credits-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+.credits-role {
+  font-size: 10px;
+  color: rgba(145, 135, 110, 0.42);
+  letter-spacing: 0.28em;
+}
+.credits-name {
+  font-size: 20px;
+  color: rgba(190, 175, 145, 0.8);
+  letter-spacing: 0.28em;
+}
+.credits-link {
+  font-size: 13px;
+  color: rgba(155, 145, 110, 0.5);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(155, 145, 110, 0.22);
+  padding-bottom: 2px;
+  transition: color 0.25s, border-color 0.25s;
+}
+.credits-link:hover {
+  color: rgba(200, 185, 145, 0.88);
+  border-color: rgba(190, 165, 100, 0.5);
+}
+#credits-replay-btn {
+  background: transparent;
+  border: 1px solid rgba(145, 135, 110, 0.32);
+  border-radius: 2px;
+  color: rgba(170, 160, 135, 0.5);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  padding: 12px 34px;
+  cursor: pointer;
+  letter-spacing: 0.22em;
+  transition: border-color 0.3s, color 0.3s;
+}
+#credits-replay-btn:hover {
+  border-color: rgba(190, 165, 100, 0.55);
+  color: rgba(215, 200, 165, 0.88);
+}
+
+@media (max-width: 600px) {
+  #settings-panel { min-width: 200px; }
+  .volume-slider { width: 80px; }
 }

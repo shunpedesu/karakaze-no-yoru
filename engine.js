@@ -15,6 +15,14 @@ class BgmPlayer {
     this._audio = null;
     this._current = null;
     this.enabled = false;
+    this._masterVol = 0.5;
+  }
+
+  setVolume(v) {
+    this._masterVol = v * 0.5; // 0-1 → 0-0.5
+    if (this._audio && this._audio.volume > 0) {
+      this._audio.volume = this._masterVol;
+    }
   }
 
   setEnabled(val) {
@@ -38,6 +46,7 @@ class BgmPlayer {
     if (!file || file === this._current) return;
     this._current = file;
     if (!this.enabled) return;
+    if (file === 'silence') { this._fadeOut(this._audio); return; }
     this._play(file);
   }
 
@@ -50,10 +59,11 @@ class BgmPlayer {
     this._audio = next;
 
     let vol = 0;
+    const target = this._masterVol;
     const fadeIn = setInterval(() => {
-      vol = Math.min(vol + 0.02, 0.5);
+      vol = Math.min(vol + 0.02, target);
       next.volume = vol;
-      if (vol >= 0.5) clearInterval(fadeIn);
+      if (vol >= target) clearInterval(fadeIn);
     }, 80);
 
     if (prev) this._fadeOut(prev);
@@ -336,6 +346,41 @@ class WindAudio {
     if (this.enabled) { this.disable(); return false; }
     else              { this.enable();  return true;  }
   }
+
+  playEffect(type) {
+    if (!this.enabled || !this.ctx) return;
+    if (type === 'gust')  this._sfxGust();
+    if (type === 'creak') this._sfxCreak();
+  }
+
+  _sfxGust() {
+    const ctx = this.ctx, now = ctx.currentTime;
+    const len = Math.floor(ctx.sampleRate * 1.4);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 650; f.Q.value = 0.35;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.28, now + 0.45);
+    g.gain.linearRampToValueAtTime(0, now + 1.4);
+    src.connect(f); f.connect(g); g.connect(ctx.destination);
+    src.start(); src.stop(now + 1.4);
+  }
+
+  _sfxCreak() {
+    const ctx = this.ctx, now = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(190, now);
+    osc.frequency.linearRampToValueAtTime(95, now + 0.28);
+    g.gain.setValueAtTime(0.09, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+    osc.connect(g); g.connect(ctx.destination);
+    osc.start(now); osc.stop(now + 0.32);
+  }
 }
 
 /* ── ゲームエンジン ── */
@@ -347,6 +392,9 @@ class NovelEngine {
     this._typingTimer = null;
     this._afterType = null;
     this._allChars = null;
+    this._typingSpeed = 38;
+    this._autoPlay = false;
+    this._autoTimer = null;
 
     this.bgEl        = document.getElementById('background');
     this.darknessEl  = document.getElementById('darkness-overlay');
@@ -364,8 +412,12 @@ class NovelEngine {
     this.speakerEl   = document.getElementById('speaker-name');
     this.silhouetteEl = document.getElementById('silhouette-img');
 
-    this._deadSet       = new Set();
+    this._deadSet        = new Set();
     this._currentChapter = -1;
+    this._deductionVisible = false;
+
+    this.deductionEl     = document.getElementById('deduction-overlay');
+    this.deductionTextEl = document.getElementById('deduction-text');
 
     this.wind    = new WindAudio();
     this.bgm     = new BgmPlayer();
@@ -393,6 +445,44 @@ class NovelEngine {
     document.getElementById('backlog-btn').addEventListener('click', () => this.backlog.show());
     document.getElementById('save-btn').addEventListener('click', () => this.saveMan.openSave());
     document.getElementById('load-btn').addEventListener('click', () => this.saveMan.openLoad());
+
+    // 設定パネル
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    settingsBtn.addEventListener('click', e => { e.stopPropagation(); settingsPanel.classList.toggle('open'); });
+    document.addEventListener('click', e => {
+      if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) settingsPanel.classList.remove('open');
+    });
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this._typingSpeed = parseInt(btn.dataset.speed);
+      });
+    });
+    const autoBtn = document.getElementById('auto-btn');
+    autoBtn.addEventListener('click', () => {
+      this._autoPlay = !this._autoPlay;
+      autoBtn.textContent = this._autoPlay ? 'ON' : 'OFF';
+      autoBtn.classList.toggle('on', this._autoPlay);
+      if (!this._autoPlay && this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
+    });
+    document.getElementById('volume-slider').addEventListener('input', e => {
+      this.bgm.setVolume(parseInt(e.target.value) / 100);
+    });
+
+    // スワイプ操作（モバイル）
+    let _swipeX = 0, _swipeY = 0;
+    document.addEventListener('touchstart', e => {
+      _swipeX = e.touches[0].clientX;
+      _swipeY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener('touchend', e => {
+      if (this.inputAreaEl.style.display === 'flex') return;
+      const dx = e.changedTouches[0].clientX - _swipeX;
+      const dy = e.changedTouches[0].clientY - _swipeY;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) this.handleClick();
+    }, { passive: true });
 
     const hideOverlay = document.getElementById('hide-overlay');
     document.getElementById('hide-btn').addEventListener('click', () => {
@@ -495,11 +585,16 @@ class NovelEngine {
 
     if (scene.type === 'title') { this.showTitleCard(scene.text, scene.next); return; }
     if (scene.type === 'input') { this.showInputScene(scene); return; }
+    if (scene.type === 'credits') { this.showCredits(); return; }
+
+    if (scene.sfx) this.wind.playEffect(scene.sfx);
 
     const startText = () => {
       this.backlog.add(scene.speaker || null, scene.text);
       this.typeText(scene.text, () => {
-        if (scene.choices) {
+        if (scene.deduction) {
+          this._showDeduction(scene.deduction);
+        } else if (scene.choices) {
           this.showChoices(scene.choices);
         } else if (scene.next) {
           this.advanceEl.style.display = 'block';
@@ -532,6 +627,18 @@ class NovelEngine {
     this.errorEl.textContent = '';
     document.body.classList.remove('climax-input');
     document.getElementById('character-list-label').textContent = 'この旅館にいた人たち';
+    this._hideDeduction();
+  }
+
+  _showDeduction(text) {
+    this._deductionVisible = true;
+    this.deductionTextEl.textContent = text;
+    this.deductionEl.classList.add('active');
+  }
+
+  _hideDeduction() {
+    this._deductionVisible = false;
+    if (this.deductionEl) this.deductionEl.classList.remove('active');
   }
 
   typeText(text, callback) {
@@ -540,9 +647,15 @@ class NovelEngine {
     this.textEl.innerHTML = '';
 
     let html = '';
+    let emphasis = false;
     for (const ch of text) {
+      if (ch === '｛') { emphasis = true; continue; }
+      if (ch === '｝') { emphasis = false; continue; }
       if (ch === '\n') { html += '<br>'; }
-      else { html += `<span class="char hidden">${this.esc(ch)}</span>`; }
+      else {
+        const cls = emphasis ? 'char hidden emphasis' : 'char hidden';
+        html += `<span class="${cls}">${this.esc(ch)}</span>`;
+      }
     }
     this.textEl.innerHTML = html;
 
@@ -556,11 +669,15 @@ class NovelEngine {
         chars[i].classList.remove('hidden');
         i++;
         box.scrollTop = box.scrollHeight;
-        this._typingTimer = setTimeout(tick, 38);
+        this._typingTimer = setTimeout(tick, this._typingSpeed);
       } else {
         this.isTyping = false;
         this._typingTimer = null;
         if (callback) callback();
+        // オートプレイ
+        if (this._autoPlay && this.currentScene?.next && !this.currentScene?.choices && this.currentScene?.type !== 'input' && !this.currentScene?.deduction) {
+          this._autoTimer = setTimeout(() => { if (this._autoPlay) this.handleClick(); }, 2800);
+        }
       }
     };
     tick();
@@ -578,6 +695,9 @@ class NovelEngine {
   handleClick() {
     if (this.isTyping) {
       this.skipTyping();
+    } else if (this._deductionVisible) {
+      this._hideDeduction();
+      if (this.currentScene?.next) this.loadScene(this.currentScene.next);
     } else if (this.currentScene?.next && !this.currentScene.choices && this.currentScene.type !== 'input') {
       this.loadScene(this.currentScene.next);
     }
@@ -668,6 +788,15 @@ class NovelEngine {
     return { error: scene.unknown_msg };
   }
 
+  showCredits() {
+    const overlay = document.getElementById('credits-overlay');
+    setTimeout(() => overlay.classList.add('active'), 200);
+    document.getElementById('credits-replay-btn').onclick = () => {
+      overlay.classList.remove('active');
+      setTimeout(() => this.loadScene('p01'), 2600);
+    };
+  }
+
   _renderSurvivorBar() {
     const bar = document.getElementById('survivor-bar');
     bar.innerHTML = '';
@@ -693,6 +822,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const startScreen = document.getElementById('start-screen');
 
   document.getElementById('start-btn').addEventListener('click', () => {
+    engine.wind.enable();
+    engine.bgm.setEnabled(true);
+    document.getElementById('sound-toggle').textContent = '🔊';
     startScreen.style.opacity = '0';
     setTimeout(() => {
       startScreen.style.display = 'none';
