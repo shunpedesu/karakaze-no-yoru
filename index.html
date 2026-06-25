@@ -7,7 +7,7 @@
 
   <!-- OGP / SNSサムネイル -->
   <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://shunpedesu.github.io/karakaze-no-yoru/">
+  <meta property="og:url"         content="https://shunpedesu.github.io/karakkaze-no-yoru/">
   <meta property="og:title"       content="からっかぜの夜">
   <meta property="og:description" content="12月の四万温泉、孤立した旅館で起きた連続死。あなたは真実にたどり着けるか。サウンドノベル">
   <meta property="og:image"       content="https://images.unsplash.com/photo-1645582115238-f52fe36a2b04?auto=format&fit=crop&w=1200&h=630&q=80">
@@ -51,22 +51,95 @@
     <button id="settings-btn" title="設定">⚙</button>
   </div>
 
-  <div id="settings-panel">
-    <div class="settings-row">
-      <span class="settings-label">テキスト速度</span>
-      <div class="speed-btns">
-        <button class="speed-btn" data-speed="70">遅</button>
-        <button class="speed-btn active" data-speed="38">普</button>
-        <button class="speed-btn" data-speed="10">速</button>
+  <div id="menu-modal">
+    <div id="menu-inner">
+      <div id="menu-tabs">
+        <button class="menu-tab active" data-tab="settings">設　定</button>
+        <button class="menu-tab" data-tab="map">見取り図</button>
+        <button class="menu-tab" data-tab="gallery">エンド記録</button>
+        <button id="menu-close">×</button>
       </div>
-    </div>
-    <div class="settings-row">
-      <span class="settings-label">オートプレイ</span>
-      <button id="auto-btn" class="toggle-btn">OFF</button>
-    </div>
-    <div class="settings-row">
-      <span class="settings-label">音　　量</span>
-      <input type="range" id="volume-slider" min="0" max="100" value="50" class="volume-slider">
+
+      <div class="tab-pane active" id="pane-settings">
+        <div class="settings-row">
+          <span class="settings-label">テキスト速度</span>
+          <div class="speed-btns">
+            <button class="speed-btn" data-speed="70">遅</button>
+            <button class="speed-btn active" data-speed="38">普</button>
+            <button class="speed-btn" data-speed="10">速</button>
+          </div>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">オートプレイ</span>
+          <button id="auto-btn" class="toggle-btn">OFF</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">音　　量</span>
+          <input type="range" id="volume-slider" min="0" max="100" value="50" class="volume-slider">
+        </div>
+      </div>
+
+      <div class="tab-pane" id="pane-map">
+        <svg id="inn-map-svg" viewBox="0 0 500 360" xmlns="http://www.w3.org/2000/svg">
+          <text x="250" y="22" text-anchor="middle" font-size="11" fill="rgba(170,160,128,0.48)" letter-spacing="6">四 万 館 見 取 り 図</text>
+
+          <rect x="18" y="34" width="148" height="58" stroke="rgba(135,125,103,0.3)" stroke-width="1" fill="none"/>
+          <text x="92" y="58" text-anchor="middle" font-size="10" fill="rgba(158,148,118,0.6)">ロビー</text>
+          <text x="92" y="74" text-anchor="middle" font-size="8" fill="rgba(135,125,100,0.35)">フロント</text>
+
+          <rect x="166" y="34" width="166" height="58" stroke="rgba(135,125,103,0.3)" stroke-width="1" fill="none"/>
+          <text x="249" y="58" text-anchor="middle" font-size="10" fill="rgba(158,148,118,0.6)">食　堂</text>
+          <text x="249" y="74" text-anchor="middle" font-size="8" fill="rgba(125,115,90,0.35)">アリバイ確認の場所</text>
+
+          <rect x="332" y="34" width="150" height="58" stroke="rgba(158,62,55,0.38)" stroke-width="1" fill="rgba(65,18,15,0.12)"/>
+          <text x="407" y="55" text-anchor="middle" font-size="10" fill="rgba(158,148,118,0.58)">事　務　室</text>
+          <text x="407" y="71" text-anchor="middle" font-size="9" fill="rgba(195,85,75,0.68)">× 渋川支配人</text>
+
+          <rect x="18" y="92" width="464" height="36" stroke="rgba(128,118,98,0.22)" stroke-width="1" fill="rgba(26,24,30,0.3)"/>
+          <text x="110" y="106" text-anchor="middle" font-size="9" fill="rgba(142,132,108,0.45)" letter-spacing="3">廊　下</text>
+          <text x="330" y="120" text-anchor="middle" font-size="9" fill="rgba(195,85,75,0.62)">× 長野原キャベ蔵が倒れた場所</text>
+
+          <rect x="18" y="128" width="80" height="78" stroke="rgba(118,108,88,0.22)" stroke-width="1" fill="none"/>
+          <text x="58" y="155" text-anchor="middle" font-size="8" fill="rgba(128,118,95,0.36)">101</text>
+          <text x="58" y="171" text-anchor="middle" font-size="9" fill="rgba(150,140,112,0.6)">中之条</text>
+
+          <rect x="98" y="128" width="80" height="78" stroke="rgba(118,108,88,0.22)" stroke-width="1" fill="none"/>
+          <text x="138" y="155" text-anchor="middle" font-size="8" fill="rgba(128,118,95,0.36)">102</text>
+          <text x="138" y="171" text-anchor="middle" font-size="9" fill="rgba(150,140,112,0.6)">長野原</text>
+
+          <rect x="178" y="128" width="84" height="78" stroke="rgba(158,62,55,0.3)" stroke-width="1" fill="rgba(60,18,15,0.1)"/>
+          <text x="220" y="152" text-anchor="middle" font-size="8" fill="rgba(128,118,95,0.36)">103</text>
+          <text x="220" y="167" text-anchor="middle" font-size="9" fill="rgba(150,140,112,0.58)">長野原豚子</text>
+          <text x="220" y="184" text-anchor="middle" font-size="10" fill="rgba(195,85,75,0.65)">×</text>
+
+          <rect x="262" y="128" width="80" height="78" stroke="rgba(118,108,88,0.22)" stroke-width="1" fill="none"/>
+          <text x="302" y="155" text-anchor="middle" font-size="8" fill="rgba(128,118,95,0.36)">104</text>
+          <text x="302" y="171" text-anchor="middle" font-size="9" fill="rgba(150,140,112,0.6)">原　町</text>
+
+          <rect x="342" y="128" width="72" height="78" stroke="rgba(118,108,88,0.22)" stroke-width="1" fill="none"/>
+          <text x="378" y="155" text-anchor="middle" font-size="8" fill="rgba(128,118,95,0.36)">105</text>
+          <text x="378" y="171" text-anchor="middle" font-size="9" fill="rgba(150,140,112,0.6)">太　田</text>
+
+          <rect x="414" y="128" width="68" height="78" stroke="rgba(108,98,78,0.18)" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+          <text x="448" y="163" text-anchor="middle" font-size="8" fill="rgba(118,108,85,0.28)">従業員</text>
+          <text x="448" y="177" text-anchor="middle" font-size="8" fill="rgba(118,108,85,0.28)">控え室</text>
+
+          <rect x="18" y="220" width="238" height="78" stroke="rgba(62,100,148,0.28)" stroke-width="1" fill="rgba(16,28,46,0.18)" rx="4"/>
+          <text x="137" y="247" text-anchor="middle" font-size="10" fill="rgba(138,150,170,0.55)">露　天　風　呂</text>
+          <text x="137" y="264" text-anchor="middle" font-size="9" fill="rgba(195,85,75,0.65)">× 中之条まんじ</text>
+          <text x="137" y="280" text-anchor="middle" font-size="8" fill="rgba(118,108,85,0.3)">第一の事件現場</text>
+
+          <rect x="266" y="220" width="216" height="78" stroke="rgba(62,100,148,0.18)" stroke-width="1" fill="rgba(14,22,38,0.1)" rx="4"/>
+          <text x="374" y="262" text-anchor="middle" font-size="10" fill="rgba(128,140,160,0.38)">大浴場（内風呂）</text>
+
+          <text x="18" y="326" font-size="9" fill="rgba(195,85,75,0.5)">×　事件現場</text>
+          <text x="115" y="326" font-size="9" fill="rgba(108,98,78,0.32)">− −　非公開エリア</text>
+        </svg>
+      </div>
+
+      <div class="tab-pane" id="pane-gallery">
+        <div id="gallery-grid"></div>
+      </div>
     </div>
   </div>
 

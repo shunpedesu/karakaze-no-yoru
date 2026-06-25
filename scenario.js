@@ -614,7 +614,7 @@ const SCENARIO = {
 
   // ── BAD END 太田 ──
   bad_ta01: {
-    bg: 'corridor', darkness: 0.5,
+    bg: 'corridor', darkness: 0.5, ending: 'e_ta',
     text: '太田こんにゃくさんは、\nずっとポケットに手を入れていた。\n\n最初から言動が不審だった。\nこんにゃくを「非常食」と言った。\nなぜ温泉旅館にジャージで来るのか。\n\nわたしは廊下の端に立って、\n太田さんから目を離さなかった。',
     next: 'bad_ta_end'
   },
@@ -627,7 +627,7 @@ const SCENARIO = {
 
   // ── BAD END ラスク ──
   bad_ra01: {
-    bg: 'corridor', darkness: 0.5,
+    bg: 'corridor', darkness: 0.5, ending: 'e_ra',
     text: '原町ラスクさんは\n最初から謎めいていた。\n\n「初めて来た顔じゃなかった」あの瞬間。\n「渋川さんをよく見ていてほしい」という言葉。\n\n知りすぎている。\n\nわたしはラスクさんの前に立った。\n\n「原町さん、何か知っていますよね」',
     next: 'bad_ra02'
   },
@@ -780,19 +780,19 @@ const SCENARIO = {
   },
 
   bad_iwa01: {
-    bg: 'corridor', darkness: 0.5,
+    bg: 'corridor', darkness: 0.5, ending: 'e_iwa',
     text: '岩島つるこ。\n\nわたしは事務室ではなく、\n岩島さんの部屋へ向かった。\n\n岩島さんは否定した。\n静かに、ただ否定した。\n\n証拠は、なかった。',
     next: 'bad_ta_end'
   },
 
   bad_ras01: {
-    bg: 'corridor', darkness: 0.5,
+    bg: 'corridor', darkness: 0.5, ending: 'e_ras',
     text: '原町ラスク。\n\nわたしはラスクさんの部屋へ向かった。\n\nラスクさんは土地開発の話を全部した。\nでも殺人の証拠は、出なかった。',
     next: 'bad_ra_end'
   },
 
   bad_ota01: {
-    bg: 'corridor', darkness: 0.5,
+    bg: 'corridor', darkness: 0.5, ending: 'e_ota',
     text: '太田こんにゃく。\n\nわたしは太田さんのもとへ向かった。\n\n太田こんにゃくさんのアリバイは\n全て確認された。\n\nポケットのこんにゃくは、\n本当にただのこんにゃくだった。\n\n「だから言っただろ、\n　食いに来ただけだって」\n\n太田さんは帰り際、そう言い残した。',
     next: 'bad_ta_end'
   },
@@ -877,7 +877,7 @@ const SCENARIO = {
   },
 
   bad_silent: {
-    bg: 'dawn', darkness: 0.4,
+    bg: 'dawn', darkness: 0.4, ending: 'e_silent',
     text: 'わたしは、何も言えなかった。\n\n朝になって雪が止み、警察が来た。\n\n姿は、消えていた。\n\n名前を呼べば、よかった。\n\nただ、それだけでよかった。\n\nからっかぜだけが、\n何かを知っていた。',
     next: 'bad_end_screen'
   },
@@ -967,7 +967,7 @@ const SCENARIO = {
   },
 
   true_end_screen: {
-    type: 'title', bg: 'winter-outside', darkness: 0,
+    type: 'title', bg: 'winter-outside', darkness: 0, ending: 'e_true',
     text: '窓の外で、からっかぜが、ようやく、止んだ。\n\n\nからっかぜの夜\n\nTRUE END',
     next: 'credits_scene'
   },

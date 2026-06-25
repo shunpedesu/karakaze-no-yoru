@@ -1,3 +1,14 @@
+/* ── エンディング定義 ── */
+const ENDINGS = [
+  { id: 'e_true',   label: 'TRUE END',       quote: '窓の外で、からっかぜが、ようやく、止んだ。' },
+  { id: 'e_silent', label: 'BAD END  沈黙',  quote: '名前を呼べば、よかった。' },
+  { id: 'e_ta',     label: 'BAD END  深雪①', quote: '見ていた方向が、間違っていた。' },
+  { id: 'e_ra',     label: 'BAD END  深雪②', quote: '答えは、すぐそこにあった。' },
+  { id: 'e_iwa',    label: 'BAD END  深雪③', quote: '証拠は、なかった。' },
+  { id: 'e_ras',    label: 'BAD END  深雪④', quote: '30年分の証言も、足りなかった。' },
+  { id: 'e_ota',    label: 'BAD END  深雪⑤', quote: 'こんにゃくは、ただのこんにゃくだった。' },
+];
+
 /* ── BGM管理 ── */
 const BGM_MAP = {
   'winter-outside': 'bgm/bgm_silence.mp3',
@@ -446,30 +457,7 @@ class NovelEngine {
     document.getElementById('save-btn').addEventListener('click', () => this.saveMan.openSave());
     document.getElementById('load-btn').addEventListener('click', () => this.saveMan.openLoad());
 
-    // 設定パネル
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsPanel = document.getElementById('settings-panel');
-    settingsBtn.addEventListener('click', e => { e.stopPropagation(); settingsPanel.classList.toggle('open'); });
-    document.addEventListener('click', e => {
-      if (!settingsPanel.contains(e.target) && e.target !== settingsBtn) settingsPanel.classList.remove('open');
-    });
-    document.querySelectorAll('.speed-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        this._typingSpeed = parseInt(btn.dataset.speed);
-      });
-    });
-    const autoBtn = document.getElementById('auto-btn');
-    autoBtn.addEventListener('click', () => {
-      this._autoPlay = !this._autoPlay;
-      autoBtn.textContent = this._autoPlay ? 'ON' : 'OFF';
-      autoBtn.classList.toggle('on', this._autoPlay);
-      if (!this._autoPlay && this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
-    });
-    document.getElementById('volume-slider').addEventListener('input', e => {
-      this.bgm.setVolume(parseInt(e.target.value) / 100);
-    });
+    this._initMenuModal();
 
     // スワイプ操作（モバイル）
     let _swipeX = 0, _swipeY = 0;
@@ -583,6 +571,7 @@ class NovelEngine {
       this.silhouetteEl.dataset.src = '';
     }
 
+    if (scene.ending) this._saveEnding(scene.ending);
     if (scene.type === 'title') { this.showTitleCard(scene.text, scene.next); return; }
     if (scene.type === 'input') { this.showInputScene(scene); return; }
     if (scene.type === 'credits') { this.showCredits(); return; }
@@ -786,6 +775,77 @@ class NovelEngine {
     if (scene.victims?.includes(val)) return { error: scene.victim_msg };
     if (val === scene.self)   return { error: scene.self_msg };
     return { error: scene.unknown_msg };
+  }
+
+  _initMenuModal() {
+    const btn   = document.getElementById('settings-btn');
+    const modal = document.getElementById('menu-modal');
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      this._renderGallery();
+      modal.classList.add('open');
+    });
+    document.getElementById('menu-close').addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('open'); });
+
+    document.querySelectorAll('.menu-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('pane-' + tab.dataset.tab).classList.add('active');
+        if (tab.dataset.tab === 'gallery') this._renderGallery();
+      });
+    });
+
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this._typingSpeed = parseInt(btn.dataset.speed);
+      });
+    });
+    const autoBtn = document.getElementById('auto-btn');
+    autoBtn.addEventListener('click', () => {
+      this._autoPlay = !this._autoPlay;
+      autoBtn.textContent = this._autoPlay ? 'ON' : 'OFF';
+      autoBtn.classList.toggle('on', this._autoPlay);
+      if (!this._autoPlay && this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
+    });
+    document.getElementById('volume-slider').addEventListener('input', e => {
+      this.bgm.setVolume(parseInt(e.target.value) / 100);
+    });
+  }
+
+  _saveEnding(id) {
+    const list = this._getUnlockedEndings();
+    if (!list.includes(id)) {
+      list.push(id);
+      localStorage.setItem('karakaze_endings', JSON.stringify(list));
+    }
+  }
+
+  _getUnlockedEndings() {
+    try { return JSON.parse(localStorage.getItem('karakaze_endings')) || []; }
+    catch { return []; }
+  }
+
+  _renderGallery() {
+    const grid = document.getElementById('gallery-grid');
+    if (!grid) return;
+    const unlocked = this._getUnlockedEndings();
+    grid.innerHTML = '';
+    ENDINGS.forEach(e => {
+      const isUnlocked = unlocked.includes(e.id);
+      const isTrue = e.id === 'e_true';
+      const card = document.createElement('div');
+      card.className = 'gallery-card' + (isUnlocked ? ' unlocked' : '') + (isTrue && isUnlocked ? ' true-end' : '');
+      card.innerHTML = isUnlocked
+        ? `<div class="gallery-label">${e.label}</div><div class="gallery-quote">「${e.quote}」</div>`
+        : `<div class="gallery-lock">？</div><div class="gallery-label-locked">？？？</div>`;
+      grid.appendChild(card);
+    });
   }
 
   showCredits() {
