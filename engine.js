@@ -437,6 +437,7 @@ class NovelEngine {
     this.saveMan.setEngine(this);
 
     document.getElementById('text-box').addEventListener('click', () => this.handleClick());
+    document.getElementById('deduction-overlay').addEventListener('click', () => this.handleClick());
 
     document.addEventListener('keydown', (e) => {
       if (this.inputAreaEl.style.display === 'flex') return;
@@ -535,10 +536,12 @@ class NovelEngine {
     if (scene.deaths) {
       scene.deaths.forEach(d => this._deadSet.add(d));
       this._renderSurvivorBar();
+      this._updateMap();
     }
     if (scene.revive) {
       scene.revive.forEach(d => this._deadSet.delete(d));
       this._renderSurvivorBar();
+      this._updateMap();
     }
 
     // pause場面は暗転してから始める
@@ -796,6 +799,7 @@ class NovelEngine {
         tab.classList.add('active');
         document.getElementById('pane-' + tab.dataset.tab).classList.add('active');
         if (tab.dataset.tab === 'gallery') this._renderGallery();
+        if (tab.dataset.tab === 'map') this._updateMap();
       });
     });
 
@@ -816,6 +820,33 @@ class NovelEngine {
     document.getElementById('volume-slider').addEventListener('input', e => {
       this.bgm.setVolume(parseInt(e.target.value) / 100);
     });
+  }
+
+  _updateMap() {
+    const MAP = {
+      '中之条まんじ':   { marks: ['map-mark-nakano', 'map-mark-nakano-sub'],   rects: [] },
+      '長野原キャベ蔵': { marks: ['map-mark-kyabeza'],  rects: [] },
+      '長野原豚子':    { marks: ['map-mark-butako'],   rects: ['map-rect-naganohara'] },
+      '渋川かつじ':   { marks: ['map-mark-sibukawa'],  rects: ['map-rect-sibukawa'] },
+    };
+    for (const [name, cfg] of Object.entries(MAP)) {
+      const dead = this._deadSet.has(name);
+      cfg.marks.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('display', dead ? '' : 'none');
+      });
+      cfg.rects.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (dead) {
+          el.setAttribute('stroke', 'rgba(158,62,55,0.38)');
+          el.setAttribute('fill', 'rgba(65,18,15,0.12)');
+        } else {
+          el.setAttribute('stroke', 'rgba(135,125,103,0.3)');
+          el.setAttribute('fill', 'none');
+        }
+      });
+    }
   }
 
   _saveEnding(id) {
